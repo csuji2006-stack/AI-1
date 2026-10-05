@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Email Spam Detector — Project Documentation</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 18mm 17mm 20mm;
+    }
+    :root {
+      color-scheme: light;
+      --ink: #172033;
+      --muted: #536176;
+      --blue: #3730a3;
+      --pale: #eef2ff;
+      --line: #dbe2ee;
+      --green: #047857;
+      --red: #b42318;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0 auto;
+      max-width: 850px;
+      color: var(--ink);
+      font: 10.5pt/1.55 "Segoe UI", Arial, sans-serif;
+      background: #fff;
+    }
+    .cover {
+      min-height: 235mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20mm 4mm 12mm;
+      page-break-after: always;
+    }
+    .eyebrow {
+      color: var(--blue);
+      font-size: 9pt;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    h1 {
+      max-width: 620px;
+      margin: 22mm 0 8mm;
+      font-size: 38pt;
+      line-height: 1.08;
+      letter-spacing: -1.5px;
+    }
+    .subtitle {
+      max-width: 540px;
+      color: var(--muted);
+      font-size: 15pt;
+      line-height: 1.5;
+    }
+    .cover-card {
+      max-width: 570px;
+      padding: 18px 22px;
+      border-left: 4px solid var(--blue);
+      background: var(--pale);
+      border-radius: 0 10px 10px 0;
+    }
+    .cover-footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      color: var(--muted);
+      font-size: 9pt;
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+    }
+    h2 {
+      margin: 25px 0 10px;
+      padding-bottom: 7px;
+      color: var(--blue);
+      font-size: 20pt;
+      line-height: 1.2;
+      border-bottom: 1px solid var(--line);
+      page-break-after: avoid;
+    }
+    h3 {
+      margin: 19px 0 6px;
+      font-size: 13pt;
+      page-break-after: avoid;
+    }
+    p { margin: 7px 0 11px; }
+    ul, ol { margin: 6px 0 14px; padding-left: 22px; }
+    li { margin: 4px 0; }
+    code {
+      padding: 1px 4px;
+      color: #312e81;
+      background: #f1f3f9;
+      border-radius: 3px;
+      font: 9pt Consolas, "Courier New", monospace;
+      overflow-wrap: anywhere;
+    }
+    pre {
+      padding: 13px 15px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f7f8fc;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font: 8.5pt/1.5 Consolas, "Courier New", monospace;
+      page-break-inside: avoid;
+    }
+    table {
+      width: 100%;
+      margin: 12px 0 18px;
+      border-collapse: collapse;
+      font-size: 9.5pt;
+      page-break-inside: avoid;
+    }
+    th, td {
+      padding: 8px 9px;
+      text-align: left;
+      vertical-align: top;
+      border: 1px solid var(--line);
+    }
+    th { background: var(--pale); color: var(--blue); }
+    .callout {
+      margin: 14px 0;
+      padding: 12px 15px;
+      border-left: 4px solid #d97706;
+      background: #fffbeb;
+      page-break-inside: avoid;
+    }
+    .success { color: var(--green); font-weight: 700; }
+    .danger { color: var(--red); font-weight: 700; }
+    .flow {
+      display: flex;
+      align-items: stretch;
+      gap: 8px;
+      margin: 14px 0;
+    }
+    .flow div {
+      flex: 1;
+      padding: 11px 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fafbff;
+      text-align: center;
+      font-size: 9pt;
+    }
+    .flow span { align-self: center; color: var(--blue); font-weight: 700; }
+    .small { color: var(--muted); font-size: 9pt; }
+    .section { page-break-inside: auto; }
+    @media print {
+      body { max-width: none; }
+      a { color: inherit; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="cover">
+    <div>
+      <div class="eyebrow">Project documentation · October 2026</div>
+      <h1>Email Spam<br>Detector</h1>
+      <p class="subtitle">A local web application that checks pasted email content for common spam and phishing warning signs.</p>
+    </div>
+    <div class="cover-card">
+      <strong>What this project does</strong>
+      <p>Accepts an optional sender address and subject plus email text, checks the input in a Flask backend, and displays a rule-based classification, risk score, and detected signals in the browser.</p>
+    </div>
+    <div class="cover-footer">
+      <span>Frontend: HTML, CSS, JavaScript</span>
+      <span>Backend: Python and Flask</span>
+      <span>Classification: transparent rules</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="section">
+      <h2>1. Project overview</h2>
+      <p>The Email Spam Detector is a small, locally run web application. A user pastes an email into the page; the browser sends the sender, subject, and body to a Flask endpoint. The backend scores matching warning signs and responds with a spam classification and explanation. The page checks again automatically after the user edits the email, and also provides a manual check button.</p>
+      <div class="callout"><strong>Important:</strong> This project currently uses regular-expression rules and weighted warning signals. It is not a trained machine-learning model, does not connect to an inbox, and cannot guarantee that a message is safe or malicious.</div>
+      <h3>Features</h3>
+      <ul>
+        <li>Optional sender email and subject fields, plus a required email-content field.</li>
+        <li>Automatic analysis after a short typing pause, a manual Detect Spam button, and a Clear button.</li>
+        <li>Spam/not-spam result, risk score from 0 to 100, and an explanation list of matched signals.</li>
+        <li>Input validation and visible messages when a request fails or the backend is unavailable.</li>
+        <li>Local-only operation: messages are analyzed by the local backend and are not sent to an email provider.</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>2. Application flow</h2>
+      <div class="flow">
+        <div>Paste email<br><span class="small">sender · subject · body</span></div><span>→</span>
+        <div>Browser sends JSON<br><span class="small">POST /api/detect</span></div><span>→</span>
+        <div>Flask scores signals<br><span class="small">weighted rules</span></div><span>→</span>
+        <div>Display result<br><span class="small">label · score · reasons</span></div>
+      </div>
+      <p>The frontend is in <code>frontend/</code>. The Flask application and its tests are in <code>frontend/backend/</code>. The backend serves the frontend at <code>http://127.0.0.1:5000</code>, so the recommended flow uses one local origin.</p>
+    </section>
+
+    <section class="section">
+      <h2>3. Run the application</h2>
+      <h3>Requirements</h3>
+      <ul>
+        <li>Python installed and available as the <code>python</code> command.</li>
+        <li>Packages in <code>frontend/backend/requirements.txt</code> installed. Flask and Flask-Cors are used by the current app; scikit-learn, pandas, and joblib are listed but the current rule-based detector does not use them.</li>
+      </ul>
+      <h3>Windows quick start</h3>
+      <ol>
+        <li>Open the project folder in File Explorer.</li>
+        <li>Double-click <code>frontend/start_detector.bat</code>.</li>
+        <li>If Flask is not installed, open PowerShell in <code>frontend/backend</code> and run the install commands below.</li>
+        <li>The launcher starts the server and opens the detector. Keep its console window open while using the app.</li>
+      </ol>
+      <h3>Manual setup</h3>
+      <pre>cd frontend\backend
+python -m pip install -r requirements.txt
+python app.py</pre>
+      <p>Then open <code>http://127.0.0.1:5000</code>. To stop the server, focus its console and press <code>Ctrl+C</code>.</p>
+      <h3>Check that the backend is running</h3>
+      <p>Open <code>http://127.0.0.1:5000/api/health</code>. A working server returns:</p>
+      <pre>{"status":"ok"}</pre>
+    </section>
+
+    <section class="section">
+      <h2>4. Use the detector</h2>
+      <ol>
+        <li>Optionally enter the sender email address and subject.</li>
+        <li>Paste the email text into <strong>Email content</strong>. The content field is required; the UI allows up to 10,000 characters.</li>
+        <li>Wait briefly for the automatic check, or select <strong>Detect Spam</strong>.</li>
+        <li>Read the classification, risk score, and signals. Select <strong>Clear</strong> to remove the fields and result.</li>
+      </ol>
+      <table>
+        <thead><tr><th>Example input</th><th>Expected outcome</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td>“Congratulations! You are a winner and have won a free gift. Click here to claim your prize: https://bit.ly/example”</td><td><span class="danger">Spam likely</span></td><td>Several prize, click-request, link, and shortened-link signals exceed the threshold.</td></tr>
+          <tr><td>“Hi Alex, the meeting is scheduled for 10 AM tomorrow. Please bring the project notes.”</td><td><span class="success">No spam signals found</span></td><td>No configured warning pattern matches.</td></tr>
+        </tbody>
+      </table>
+      <p class="small">These are illustrative rule-engine examples, not guaranteed outcomes for every message.</p>
+    </section>
+
+    <section class="section">
+      <h2>5. Detection logic</h2>
+      <p>The backend searches the combined sender, subject, and body text. Each listed rule adds its weight once if its pattern matches. A URL and a shortened URL can each add points; repeated exclamation marks add a small additional score.</p>
+      <table>
+        <thead><tr><th>Signal</th><th>Points</th><th>Examples / description</th></tr></thead>
+        <tbody>
+          <tr><td>Prize, lottery, or free-gift language</td><td>20</td><td>winner, lottery, prize, free cash/gift/money/iPhone</td></tr>
+          <tr><td>Urgent or time-limited language</td><td>15</td><td>urgent, act now, immediately, limited time, expires today</td></tr>
+          <tr><td>Click or account verification request</td><td>25</td><td>click here, verify account/identity, confirm account/details</td></tr>
+          <tr><td>Sensitive credential or financial request</td><td>25</td><td>password, bank details, credit card, social security, OTP</td></tr>
+          <tr><td>Payment or money-transfer request</td><td>25</td><td>wire transfer, gift card, send money, payment required, processing fee</td></tr>
+          <tr><td>Guaranteed or risk-free claim</td><td>15</td><td>guaranteed, risk-free</td></tr>
+          <tr><td>Web link</td><td>10</td><td>http(s):// or www.</td></tr>
+          <tr><td>Shortened web link</td><td>15</td><td>bit.ly, tinyurl.com, t.co, goo.gl, cutt.ly</td></tr>
+          <tr><td>Repeated exclamation marks</td><td>5</td><td>Two or more consecutive ! marks</td></tr>
+        </tbody>
+      </table>
+      <p>The raw score is capped at 100. A score of <strong>30 or higher</strong> is classified as <code>spam</code>; lower scores are classified as <code>not_spam</code>. A low score means the listed rules did not find strong signals; it is not proof of legitimacy.</p>
+    </section>
+
+    <section class="section">
+      <h2>6. Backend API</h2>
+      <h3><code>POST /api/detect</code></h3>
+      <p>Accepts a JSON object. All three fields must be strings; sender and subject may be empty, but body must contain non-whitespace text.</p>
+      <pre>{
+  "sender": "offers@example.com",
+  "subject": "Urgent prize",
+  "body": "Congratulations winner! Click here to claim your prize: https://bit.ly/example"
+}</pre>
+      <p>Successful response:</p>
+      <pre>{
+  "is_spam": true,
+  "classification": "spam",
+  "risk_score": 85,
+  "signals": [
+    "Prize, lottery, or free-gift language",
+    "Urgent or time-limited language",
+    "A request to click a link or verify account details",
+    "Contains a web link",
+    "Contains a shortened link that hides its destination"
+  ],
+  "summary": "This email has multiple common spam or phishing warning signs."
+}</pre>
+      <p><code>is_spam</code> is a boolean; <code>classification</code> is <code>spam</code> or <code>not_spam</code>; <code>risk_score</code> is an integer from 0 to 100; <code>signals</code> is a list of explanations; and <code>summary</code> is a readable result summary.</p>
+      <table>
+        <thead><tr><th>HTTP status</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td>200</td><td>Email successfully evaluated.</td></tr>
+          <tr><td>400</td><td>Invalid JSON object/field, invalid sender format, field length exceeded, or empty body.</td></tr>
+          <tr><td>415</td><td>Request is not JSON.</td></tr>
+          <tr><td>413</td><td>Request exceeds the server's 64 KB request limit.</td></tr>
+        </tbody>
+      </table>
+      <h3><code>GET /api/health</code></h3>
+      <p>Returns <code>{"status":"ok"}</code> when the server is available.</p>
+    </section>
+
+    <section class="section">
+      <h2>7. Validation and troubleshooting</h2>
+      <h3>Run the backend tests</h3>
+      <pre>cd frontend\backend
+python -m unittest</pre>
+      <p>The test suite covers spam and ordinary messages, request validation, the health endpoint, frontend serving, and cross-origin requests from a local file page.</p>
+      <table>
+        <thead><tr><th>Symptom</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td>“Can't reach the spam checker” or no result</td><td>Start the server with <code>frontend/start_detector.bat</code> and open <code>http://127.0.0.1:5000</code>. Keep the launcher window open.</td></tr>
+          <tr><td>Flask is not installed</td><td>From <code>frontend\backend</code>, run <code>python -m pip install -r requirements.txt</code>.</td></tr>
+          <tr><td>Sender validation error</td><td>Enter a basic address such as <code>person@example.com</code>, or leave the optional sender field blank.</td></tr>
+          <tr><td>Empty-content error</td><td>Paste non-empty email text into the Email content field.</td></tr>
+          <tr><td>Unexpected classification</td><td>Review matched signals and remember that this prototype only checks its configured patterns; use an independent trusted channel to verify suspicious requests.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>8. Privacy, security, and limitations</h2>
+      <ul>
+        <li>The app does not log into a mailbox, retrieve messages, or forward pasted text to an external spam service.</li>
+        <li>The development server binds to <code>127.0.0.1</code>, making it available on the local machine by default. It is not configured as a public production service.</li>
+        <li>The API validates request types and lengths, validates a non-empty sender address, and limits the request body size.</li>
+        <li>Rule matching is intentionally simple. It can miss novel phishing messages, and legitimate email may contain words or links that trigger signals.</li>
+        <li>The risk score is a rule score, not a statistically calibrated probability of spam.</li>
+        <li>The interface analyzes pasted text only. It does not inspect attachments, authenticate senders, resolve link destinations, or check domain reputation.</li>
+      </ul>
+      <div class="callout"><strong>Safe-use guidance:</strong> Do not click an unexpected link or share passwords, one-time codes, or payment details because a message looks ordinary or receives a low score. Verify sensitive requests through a known, separate contact method.</div>
+    </section>
+
+    <section class="section">
+      <h2>9. Project files</h2>
+      <table>
+        <thead><tr><th>Path</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>frontend/index.html</code></td><td>Page layout and detector input/result elements.</td></tr>
+          <tr><td><code>frontend/style.css</code></td><td>Visual styling and responsive layout.</td></tr>
+          <tr><td><code>frontend/script.js</code></td><td>Automatic/manual checks, API calls, status and result rendering.</td></tr>
+          <tr><td><code>frontend/start_detector.bat</code></td><td>Windows quick-start launcher.</td></tr>
+          <tr><td><code>frontend/backend/app.py</code></td><td>Flask routes, request validation, and rule-based scoring.</td></tr>
+          <tr><td><code>frontend/backend/requirements.txt</code></td><td>Python package requirements.</td></tr>
+          <tr><td><code>frontend/backend/test_app.py</code></td><td>Backend API tests.</td></tr>
+          <tr><td><code>frontend/backend/README.md</code></td><td>Short backend setup and usage guide.</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

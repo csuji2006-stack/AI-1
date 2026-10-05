@@ -205,9 +205,33 @@ body {
     margin-bottom: 10px;
 }
 
+input[type="email"],
+input[type="text"] {
+    width: 100%;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    font-family: inherit;
+    outline: none;
+    background: white;
+}
+
+input[type="email"]:focus,
+input[type="text"]:focus {
+    border-color: #4f46e5;
+}
+
+.detector-box label span {
+    color: #667085;
+    font-size: 13px;
+    font-weight: 400;
+}
+
 textarea {
     width: 100%;
-    height: 180px;
+    min-height: 180px;
     resize: vertical;
     border: 2px solid #e5e7eb;
     border-radius: 12px;
@@ -254,6 +278,22 @@ textarea:focus {
     margin-left: 8px;
 }
 
+.detect-btn:disabled {
+    cursor: wait;
+    opacity: 0.7;
+}
+
+.detection-status {
+    min-height: 24px;
+    margin-top: 12px;
+    color: #667085;
+    font-size: 14px;
+}
+
+.detection-status.error {
+    color: #b91c1c;
+}
+
 /* RESULT */
 
 .result {
@@ -281,6 +321,11 @@ textarea:focus {
 }
 
 .result p {
+    color: #5b6475;
+}
+
+.result-signals {
+    margin: 10px 0 0 18px;
     color: #5b6475;
 }
 
