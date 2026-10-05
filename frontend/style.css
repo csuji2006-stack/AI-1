@@ -188,6 +188,17 @@ body {
     color: #667085;
 }
 
+.hosting-notice {
+    max-width: 800px;
+    margin: -25px auto 25px;
+    padding: 12px 16px;
+    border: 1px solid #fcd34d;
+    border-radius: 10px;
+    background: #fffbeb;
+    color: #92400e;
+    text-align: left;
+}
+
 /* DETECTOR BOX */
 
 .detector-box {
