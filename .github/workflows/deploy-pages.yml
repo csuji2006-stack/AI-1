@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - "frontend/index.html"
-      - "frontend/script-v2.js"
+      - "frontend/script-v3.js"
       - "frontend/style.css"
       - "docs/project-documentation.pdf"
       - ".github/workflows/deploy-pages.yml"
@@ -31,7 +31,7 @@ jobs:
       - name: Prepare static site
         run: |
           mkdir -p _site/docs
-          cp frontend/index.html frontend/script-v2.js frontend/style.css _site/
+          cp frontend/index.html frontend/script-v3.js frontend/style.css _site/
           cp docs/project-documentation.pdf _site/docs/
 
       - name: Configure GitHub Pages

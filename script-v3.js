@@ -116,6 +116,17 @@ async function detectSpam() {
         return;
     }
 
+    if (isGitHubPages) {
+        renderResult(analyzeEmailLocally(
+            senderInput.value.trim(),
+            subjectInput.value.trim(),
+            message,
+        ));
+        detectionStatus.textContent = "Checked locally in your browser.";
+        detectionStatus.classList.remove("error");
+        return;
+    }
+
     if (activeRequest) {
         activeRequest.abort();
     }
@@ -157,6 +168,11 @@ async function detectSpam() {
         detectionStatus.classList.remove("error");
     } catch (error) {
         if (error.name === "AbortError" || currentRequest !== requestNumber) {
+            return;
+        }
+
+        if (!(error instanceof TypeError)) {
+            showError(error.message || "Unable to connect to the spam detection service.");
             return;
         }
 
