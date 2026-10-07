@@ -32,6 +32,7 @@ if (isGitHubPages) {
 function hideResult() {
     result.classList.add("hidden");
     result.classList.remove("spam-result", "safe-result");
+    result.removeAttribute("data-state");
     resultSignals.replaceChildren();
 }
 
@@ -96,6 +97,7 @@ async function detectSpam() {
         resultTitle.textContent = data.is_spam ? "Spam likely" : "No spam signals found";
         resultMessage.textContent =
             `${data.summary} Risk score: ${data.risk_score}/100.`;
+        result.dataset.state = data.is_spam ? "spam" : "safe";
         resultSignals.replaceChildren();
         data.signals.forEach((signal) => {
             const item = document.createElement("li");

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Spam Detection</title>
+    <title>MailShield AI</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -11,56 +11,72 @@
 
     <header class="navbar">
         <div class="logo">
-            <span>AI</span> Spam Detector
+            <span>Mail</span>Shield AI
         </div>
 
         <nav>
-            <a href="#home">Home</a>
-            <a href="#detector">Detector</a>
+            <a href="#home">Overview</a>
+            <a href="#detector">Scanner</a>
             <a href="#about">About</a>
         </nav>
     </header>
 
     <main>
 
-        <!-- HOME -->
         <section id="home" class="hero">
             <div class="hero-content">
-                <div class="badge">EMAIL SECURITY</div>
+                <div class="badge">EMAIL THREAT MONITOR</div>
 
-                <h1>Detect Spam<br><span>Instantly</span></h1>
+                <h1>Catch risky emails<br><span>before they reach the inbox</span></h1>
 
                 <p>
-                    Paste an email and automatically check its content for common
-                    spam and phishing warning signs.
+                    Scan sender details, subject lines, and message content for urgency,
+                    phishing cues, and suspicious wording that often signal spam.
                 </p>
 
-                <a href="#detector" class="primary-btn">
-                    Try Spam Detector
-                </a>
+                <div class="hero-actions">
+                    <a href="#detector" class="primary-btn">Run Security Scan</a>
+                    <span class="mini-status"><span class="dot"></span>Live email checks</span>
+                </div>
+
+                <div class="signal-row">
+                    <span>Urgency</span>
+                    <span>Urls</span>
+                    <span>Pressure</span>
+                    <span>Phishing</span>
+                </div>
             </div>
 
             <div class="hero-card">
-                <div class="shield">🛡️</div>
-                <h3>Smart Detection</h3>
-                <p>Designed for fast and simple message analysis.</p>
+                <div class="panel-header">
+                    <span class="mini-label">Inbox watch</span>
+                    <span class="status-pill"><span class="dot"></span>Secure</span>
+                </div>
 
-                <div class="status">
-                    <span class="dot"></span>
-                    System Ready
+                <div class="shield">🛡️</div>
+                <h3>Threat overview</h3>
+
+                <div class="metric-list">
+                    <div>
+                        <strong>24</strong>
+                        <span>Signals checked</span>
+                    </div>
+                    <div>
+                        <strong>2.3s</strong>
+                        <span>Avg. scan time</span>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- DETECTOR -->
         <section id="detector" class="detector-section">
 
             <div class="section-heading">
                 <div class="badge">MESSAGE ANALYSIS</div>
                 <h2>Email Spam Detector</h2>
                 <p>
-                    Paste an email below. The detector checks it automatically as
-                    you type, or use the button to run the check immediately.
+                    Paste an email below. The detector checks it automatically as you type,
+                    or run the scan manually whenever you're ready.
                 </p>
                 <p id="hostingNotice" class="hosting-notice hidden" role="status"></p>
             </div>
@@ -93,22 +109,20 @@
                     <span id="charCount">0</span>/10000 characters
                 </div>
 
-                <button id="detectBtn" class="detect-btn" type="button">
-                    🔍 Detect Spam
-                </button>
+                <div class="button-row">
+                    <button id="detectBtn" class="detect-btn" type="button">
+                        🔍 Detect Spam
+                    </button>
 
-                <button id="clearBtn" class="clear-btn" type="button">
-                    Clear
-                </button>
+                    <button id="clearBtn" class="clear-btn" type="button">
+                        Clear
+                    </button>
+                </div>
 
                 <p id="detectionStatus" class="detection-status" role="status" aria-live="polite"></p>
 
-                <!-- RESULT -->
                 <div id="result" class="result hidden" aria-live="polite">
-
-                    <div id="resultIcon" class="result-icon">
-                        ✓
-                    </div>
+                    <div id="resultIcon" class="result-icon">✓</div>
 
                     <div>
                         <h3 id="resultTitle">Result</h3>
@@ -117,13 +131,11 @@
                         </p>
                         <ul id="resultSignals" class="result-signals"></ul>
                     </div>
-
                 </div>
 
             </div>
         </section>
 
-        <!-- FEATURES -->
         <section class="features">
 
             <div class="section-heading">
@@ -136,27 +148,24 @@
                 <div class="feature-card">
                     <div class="feature-icon">⚡</div>
                     <h3>Fast Analysis</h3>
-                    <p>Checks email text for suspicious wording, links, and other common warning signs.</p>
+                    <p>Checks email text for suspicious wording, links, and common scam patterns in seconds.</p>
                 </div>
 
                 <div class="feature-card">
                     <div class="feature-icon">🔒</div>
-                    <h3>Secure Interface</h3>
-                    <p>Email content is analyzed locally by this app's backend and is not sent to an email provider.</p>
+                    <h3>Private Workflow</h3>
+                    <p>The detector analyzes locally on your app and keeps the process transparent and user-controlled.</p>
                 </div>
 
                 <div class="feature-card">
                     <div class="feature-icon">🤖</div>
-                    <h3>Clear Results</h3>
-                    <p>
-                        See the risk score and the specific warning signs found in each email.
-                    </p>
+                    <h3>Clear Reporting</h3>
+                    <p>Each scan highlights the warning cues and gives a quick risk score for fast review.</p>
                 </div>
 
             </div>
         </section>
 
-        <!-- ABOUT -->
         <section id="about" class="about">
 
             <div class="about-content">
@@ -165,12 +174,10 @@
                 <h2>Email Spam Detection System</h2>
 
                 <p>
-                    Paste an email's sender, subject, and content to check for common
-                    spam and phishing signals. This demo uses transparent rules; it
-                    does not connect to your inbox or replace a trained spam filter.
+                    This project is built to review email text for common phishing and spam traits.
+                    It is designed as a transparent demo with visible rule checks, not a full inbox
+                    integration or an enterprise mail filter.
                 </p>
-
-                
             </div>
 
         </section>
@@ -178,7 +185,7 @@
     </main>
 
     <footer>
-        <p>© 2026 AI Spam Detection System | Project</p>
+        <p>© 2026 MailShield AI | Security Project</p>
     </footer>
 
     <script src="script.js"></script>
