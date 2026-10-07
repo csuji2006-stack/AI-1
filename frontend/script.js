@@ -13,6 +13,15 @@ const resultMessage = document.getElementById("resultMessage");
 const resultSignals = document.getElementById("resultSignals");
 const hostingNotice = document.getElementById("hostingNotice");
 
+const SPAM_PATTERNS = [
+    { pattern: /\b(?:winner|lottery|prize|free\s+(?:cash|gift|money|iPhone))\b/i, weight: 20, signal: "Prize, lottery, or free-gift language" },
+    { pattern: /\b(?:urgent|act now|immediately|limited time|expires today)\b/i, weight: 15, signal: "Urgent or time-limited language" },
+    { pattern: /\b(?:click here|verify (?:your )?(?:account|identity)|confirm (?:your )?(?:account|details))\b/i, weight: 25, signal: "A request to click a link or verify account details" },
+    { pattern: /\b(?:password|bank details|credit card|social security|one-time passcode|\bOTP\b)\b/i, weight: 25, signal: "A request involving sensitive credentials or financial details" },
+    { pattern: /\b(?:wire transfer|gift card|send money|payment required|processing fee)\b/i, weight: 25, signal: "A request for payment or money transfer" },
+    { pattern: /\b(?:guaranteed|risk[- ]free)\b/i, weight: 15, signal: "Unusually guaranteed or risk-free claims" },
+];
+
 let debounceTimer;
 let activeRequest;
 let requestNumber = 0;
@@ -24,8 +33,7 @@ const apiBase = window.location.protocol === "file:" ||
     : "";
 
 if (isGitHubPages) {
-    hostingNotice.textContent =
-        "This GitHub Pages demo hosts only the website. Spam checking needs the Python backend, which is not deployed here. Run frontend\\start_detector.bat to check emails locally.";
+    hostingNotice.textContent = "This demo runs the detector directly in the browser, so it works on GitHub Pages without the Python backend.";
     hostingNotice.classList.remove("hidden");
 }
 
@@ -42,14 +50,64 @@ function showError(message) {
     detectionStatus.classList.add("error");
 }
 
+function analyzeEmailLocally(sender, subject, body) {
+    const emailText = `${sender}\n${subject}\n${body}`;
+    let score = 0;
+    const signals = [];
+
+    SPAM_PATTERNS.forEach(({ pattern, weight, signal }) => {
+        if (pattern.test(emailText)) {
+            score += weight;
+            signals.push(signal);
+        }
+    });
+
+    if (/(https?:\/\/|www\.)/i.test(emailText)) {
+        score += 10;
+        signals.push("Contains a web link");
+    }
+
+    if (/https?:\/\/(?:bit\.ly|tinyurl\.com|t\.co|goo\.gl|cutt\.ly)\//i.test(emailText)) {
+        score += 15;
+        signals.push("Contains a shortened link that hides its destination");
+    }
+
+    if (/!{2,}/.test(emailText)) {
+        score += 5;
+        signals.push("Uses repeated exclamation marks");
+    }
+
+    const riskScore = Math.min(score, 100);
+    const isSpam = riskScore >= 30;
+    return {
+        is_spam: isSpam,
+        classification: isSpam ? "spam" : "not_spam",
+        risk_score: riskScore,
+        signals,
+        summary: isSpam
+            ? "This email has multiple common spam or phishing warning signs."
+            : "No strong common spam or phishing pattern was detected.",
+    };
+}
+
+function renderResult(data) {
+    result.classList.remove("hidden", "spam-result", "safe-result");
+    result.classList.add(data.is_spam ? "spam-result" : "safe-result");
+    resultIcon.textContent = data.is_spam ? "!" : "✓";
+    resultTitle.textContent = data.is_spam ? "Spam likely" : "No spam signals found";
+    resultMessage.textContent = `${data.summary} Risk score: ${data.risk_score}/100.`;
+    result.dataset.state = data.is_spam ? "spam" : "safe";
+    resultSignals.replaceChildren();
+    data.signals.forEach((signal) => {
+        const item = document.createElement("li");
+        item.textContent = signal;
+        resultSignals.appendChild(item);
+    });
+}
+
 async function detectSpam() {
     const message = messageInput.value.trim();
     const currentRequest = ++requestNumber;
-
-    if (isGitHubPages) {
-        showError("Spam checking is unavailable on this static demo. Run frontend\\start_detector.bat to use the detector locally.");
-        return;
-    }
 
     if (!message) {
         hideResult();
@@ -61,6 +119,7 @@ async function detectSpam() {
     if (activeRequest) {
         activeRequest.abort();
     }
+
     activeRequest = new AbortController();
     detectionStatus.textContent = "Checking email...";
     detectionStatus.classList.remove("error");
@@ -73,47 +132,48 @@ async function detectSpam() {
             body: JSON.stringify({
                 sender: senderInput.value.trim(),
                 subject: subjectInput.value.trim(),
-                body: message
+                body: message,
             }),
-            signal: activeRequest.signal
+            signal: activeRequest.signal,
         });
+
         let data;
         try {
             data = await response.json();
         } catch {
-            throw new Error("The spam checker returned an invalid response. Start it with frontend\\start_detector.bat.");
+            throw new Error("The spam checker returned an invalid response.");
         }
 
         if (!response.ok) {
             throw new Error(data.error || "The email could not be checked.");
         }
+
         if (currentRequest !== requestNumber) {
             return;
         }
 
-        result.classList.remove("hidden", "spam-result", "safe-result");
-        result.classList.add(data.is_spam ? "spam-result" : "safe-result");
-        resultIcon.textContent = data.is_spam ? "!" : "✓";
-        resultTitle.textContent = data.is_spam ? "Spam likely" : "No spam signals found";
-        resultMessage.textContent =
-            `${data.summary} Risk score: ${data.risk_score}/100.`;
-        result.dataset.state = data.is_spam ? "spam" : "safe";
-        resultSignals.replaceChildren();
-        data.signals.forEach((signal) => {
-            const item = document.createElement("li");
-            item.textContent = signal;
-            resultSignals.appendChild(item);
-        });
+        renderResult(data);
         detectionStatus.textContent = "Checked automatically.";
         detectionStatus.classList.remove("error");
     } catch (error) {
         if (error.name === "AbortError" || currentRequest !== requestNumber) {
             return;
         }
-        const message = error instanceof TypeError
-            ? "Can't reach the spam checker. Start it with frontend\\start_detector.bat, then open http://127.0.0.1:5000."
-            : error.message || "Unable to connect to the spam detection service.";
-        showError(message);
+
+        const fallbackData = analyzeEmailLocally(
+            senderInput.value.trim(),
+            subjectInput.value.trim(),
+            message,
+        );
+        if (currentRequest !== requestNumber) {
+            return;
+        }
+
+        renderResult(fallbackData);
+        detectionStatus.textContent = isGitHubPages
+            ? "Checked locally in your browser."
+            : "Checked locally because the backend is unavailable.";
+        detectionStatus.classList.remove("error");
     } finally {
         if (currentRequest === requestNumber) {
             detectBtn.disabled = false;
@@ -133,7 +193,7 @@ function scheduleDetection() {
     }
     detectBtn.disabled = false;
 
-    if (messageInput.value.trim() && !isGitHubPages) {
+    if (messageInput.value.trim()) {
         debounceTimer = window.setTimeout(detectSpam, 500);
     }
 }
